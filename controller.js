@@ -12,57 +12,59 @@ function reset() {
         teams: newTeams,
         currentTeam: 0,
         paused: false,
-        dieValue: rollDie(6)
+        dieResult: rollDie(6)
     }
 }
 
-function placeOnBoard(teamNumber) {
+function placeOnBoard(teamNumber, playerId) {
     var team = gameState.teams[teamNumber];
-    team.players[0].location = team.start;
+    var player = team.players.find(function (p) {
+        return p.id == playerId;
+    });
+    player.location = team.start;
+    player.avatar.x(spaces[team.start].x);
+    player.avatar.y(spaces[team.start].y);
+    playerLayer.add(player.avatar);
+    console.log(player.avatar);
+    playerLayer.draw();
 }
 
 function playersInHome(teamNumber) {
-    console.log(`Finding players in ${teamNumber}`);
     return gameState.teams[teamNumber].players.find(function (player) {
         return player.location == -1;
     });
 }
 
 function rollDie(max) {
-    return Math.ceil(Math.random() * max);
+    var value = Math.ceil(Math.random() * max);
+    gameState.dieResult = value;
+    return value;
 }
 
 function takeTurn() {
-    gameState.dieValue = rollDie(6);
-    var turnValue = gameState.dieValue;
+    gameState.dieResult = rollDie(6);
+    var turnValue = gameState.dieResult;
     console.log(turnValue);
     var currentTeam = gameState.currentTeam;
     
-    if (playersInHome(currentTeam) && turnValue == 6) {
-        placeOnBoard(currentTeam);
-        gameState.paused = true;
+    var playerInHome = playersInHome(currentTeam);
+
+    if ( playerInHome && turnValue == 6) {
+        placeOnBoard(currentTeam, playerInHome.id);
+    } else {
+        if (gameState.currentTeam == gameState.teams.length - 1) {
+            gameState.currentTeam = 0;
+        } else {
+            gameState.currentTeam++;
+        }
     }
                      
-    if (gameState.currentTeam == gameState.teams.length - 1) {
-        gameState.currentTeam = 0;
-    } else {
-        gameState.currentTeam++;
-    }
+
     console.log('Drawing die');
     dieLayer.draw();
-    
+
+    turnIndicator.fill(theme.teamColors[currentTeam]);
+    layer.draw();
 }
 
 reset();
-
-/*
-process flow
-
-start game
-reset all pieces to home
-pick team to start
-roll die
-if 6 -> place piece on board -> roll again -> move piece
-else -> next
-
-*/

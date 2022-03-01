@@ -19,6 +19,8 @@ var theme = {
 
 // then create layer
 var layer = new Konva.Layer();
+var playerLayer = new Konva.Layer();
+
 var wedgeStroke = 0;
 
 var sectionNW = new Konva.Wedge({
@@ -156,17 +158,36 @@ var dieValue = new Konva.Text({
     y: (stage.height() / 2) - 8,
     fontSize: 24,
     font: 'helvetica',
-    text: 1
+    text: gameState.dieResult
 });
 
 dieCircle.on('mouseup', function(event) {
     takeTurn();
-    dieValue.text(gameState.dieValue);
+    dieValue.text(gameState.dieResult);
+    dieLayer.draw();
+});
+
+dieValue.on('mouseup', function(event) {
+    takeTurn();
+    dieValue.text(gameState.dieResult);
+    dieLayer.draw();
 });
 
 dieLayer.add(dieCircle);
 dieLayer.add(dieValue);
 stage.add(dieLayer);
+stage.add(playerLayer);
+
+// Turn indicator
+var turnIndicator = new Konva.Circle({
+    x: 20,
+    y: 20,
+    radius: 20,
+    fill: 'white',
+    strokeWidth: 4
+});
+
+layer.add(turnIndicator);
 
 // draw the image
 layer.draw();

@@ -8,14 +8,22 @@ function makePlayers(teamSize) {
     var players = [];
     for (var i = 0; i < teamSize; i++) {
         players.push({
+            id: i,
             location: -1,
-            avatar: {}
+            avatar: new Konva.Circle({
+                x: i * 20,
+                y: 10,
+                radius: 5,
+                fill: 'black',
+                stroke: 'black',
+                strokeWidth: 1
+            })
         });
     }
     return players;
 }
 
-function makeTeam(size, start) {
+function makeTeam(teamSize, start) {
     return {
         start: start, // location on board where team starts
         end: start - 1,
@@ -27,7 +35,7 @@ function makeTeams(size) {
     var teams = [];
     for (var i = 0; i < size; i++) {
         var start = i * 8;
-        teams.push(makeTeam(teamSize, start));
+        teams.push(makeTeam(size, start));
     }
     return teams;
 }
