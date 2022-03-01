@@ -8,6 +8,15 @@ var stage = new Konva.Stage({
     height: stageSize
 });
 
+var theme = {
+    teamColors: [
+        "#FBF46D",
+        "#B4FE98",
+        "#77E4D4",
+        "#998CEB"
+    ]
+}
+
 // then create layer
 var layer = new Konva.Layer();
 var wedgeStroke = 0;
@@ -17,7 +26,7 @@ var sectionNW = new Konva.Wedge({
     y: stage.height() / 2,
     radius: (stageSize / 2) - 5,
     angle: 90,
-    fill: 'red',
+    fill: theme.teamColors[3],
     stroke: 'black',
     strokeWidth: wedgeStroke,
     rotation: 0,
@@ -28,7 +37,7 @@ var sectionNE = new Konva.Wedge({
     y: stage.height() / 2,
     radius: (stageSize / 2) - 5,
     angle: 90,
-    fill: 'green',
+    fill: theme.teamColors[2],
     stroke: 'black',
     strokeWidth: wedgeStroke,
     rotation: 90,
@@ -39,7 +48,7 @@ var sectionSW = new Konva.Wedge({
     y: stage.height() / 2,
     radius: (stageSize / 2) - 5,
     angle: 90,
-    fill: 'blue',
+    fill: theme.teamColors[1],
     stroke: 'black',
     strokeWidth: wedgeStroke,
     rotation: 180,
@@ -50,7 +59,7 @@ var sectionSE = new Konva.Wedge({
     y: stage.height() / 2,
     radius: (stageSize / 2) - 5,
     angle: 90,
-    fill: 'yellow',
+    fill: theme.teamColors[0],
     stroke: 'black',
     strokeWidth: wedgeStroke,
     rotation: 270,
@@ -88,7 +97,15 @@ function makeSpaces(steps) {
     for (var i=1; i <= steps; i++) {
         var x = (stageSize / 2) + radius * Math.cos(2 * Math.PI * (i / steps));
         var y = (stageSize / 2) + radius * Math.sin(2 * Math.PI * (i / steps));
-        spaces.push({x, y});
+        var type = 'basic';
+        if ( (i - 1) % 8 == 0 ) {
+            type = 'start';
+        } else if ((i + 4) % 8 == 0) {
+            type = 'double';
+        } else {
+            type = 'basic';
+        }
+        spaces.push({x, y, type});
     }
     return spaces;
 }
@@ -96,40 +113,35 @@ function makeSpaces(steps) {
 var spaces = makeSpaces(32);
 
 for (var i = 0; i < spaces.length; i++) {
-    if ( i % 8 == 0 ) {
+    if ( spaces[i].type == 'start') {
         layer.add(basicSpace(spaces[i].x, spaces[i].y, 15, 'grey'));
+    } else if (spaces[i].type == 'double') {
+        layer.add(basicSpace(spaces[i].x, spaces[i].y, 15, 'white'));
     } else {
         layer.add(basicSpace(spaces[i].x, spaces[i].y, 15, 'lightgray'));
     }
 }
 
 for (var i = 0; i < 4;i++) {
-    layer.add(basicSpace(stageSize / 2, (60 * i) + 80, 15, 'yellow'));
+    layer.add(basicSpace(stageSize / 2, (60 * i) + 80, 15, theme.teamColors[0]));
 }
 
 for (var i = 0; i < 4;i++) {
-    layer.add(basicSpace((60 * i) + 80, stageSize / 2, 15, 'blue'));
+    layer.add(basicSpace((60 * i) + 80, stageSize / 2, 15, theme.teamColors[1]));
 }
 
 for (var i = 0; i < 4;i++) {
-    layer.add(basicSpace(stageSize / 2, (60 * i) + (stageSize - 260), 15, 'green'));
+    layer.add(basicSpace(stageSize / 2, (60 * i) + (stageSize - 260), 15, theme.teamColors[2]));
 }
 
 for (var i = 0; i < 4;i++) {
-    layer.add(basicSpace((60 * i) + (stageSize - 260), stageSize / 2, 15, 'red'));
+    layer.add(basicSpace((60 * i) + (stageSize - 260), stageSize / 2, 15, theme.teamColors[3]));
 }
-
 
 // add the layer to the stage
 stage.add(layer);
 
-// dice layer
-
-function rollDie(max) {
-    return Math.ceil(Math.random() * max);
-}
-
-var dieLayer = new Konva.Layer();
+dieLayer = new Konva.Layer();
 var dieRadius = 50;
 var dieCircle = new Konva.Circle({
     x: stage.width() / 2,
@@ -148,7 +160,8 @@ var dieValue = new Konva.Text({
 });
 
 dieCircle.on('mouseup', function(event) {
-    dieValue.text(rollDie(6));
+    takeTurn();
+    dieValue.text(gameState.dieValue);
 });
 
 dieLayer.add(dieCircle);

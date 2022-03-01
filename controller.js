@@ -4,12 +4,15 @@ var gameState = {
     paused: true
 };
 
+var dieLayer = {}
+
 function reset() {
     var newTeams = makeTeams(4);
     gameState = {
         teams: newTeams,
         currentTeam: 0,
-        paused: false
+        paused: false,
+        dieValue: rollDie(6)
     }
 }
 
@@ -25,8 +28,13 @@ function playersInHome(teamNumber) {
     });
 }
 
+function rollDie(max) {
+    return Math.ceil(Math.random() * max);
+}
+
 function takeTurn() {
-    var turnValue = rollDie(6);
+    gameState.dieValue = rollDie(6);
+    var turnValue = gameState.dieValue;
     console.log(turnValue);
     var currentTeam = gameState.currentTeam;
     
@@ -40,6 +48,8 @@ function takeTurn() {
     } else {
         gameState.currentTeam++;
     }
+    console.log('Drawing die');
+    dieLayer.draw();
     
 }
 
