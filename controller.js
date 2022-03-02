@@ -41,6 +41,12 @@ function rollDie(max) {
     return value;
 }
 
+function playersOnBoard(teamNumber) {
+    return gameState.teams[teamNumber].players.filter(function (player) {
+        return player.location != -1;
+    });
+}
+
 function takeTurn() {
     gameState.dieResult = rollDie(6);
     var turnValue = gameState.dieResult;
@@ -48,9 +54,12 @@ function takeTurn() {
     var currentTeam = gameState.currentTeam;
     
     var playerInHome = playersInHome(currentTeam);
+    var onBoard = playersOnBoard(currentTeam);
 
     if ( playerInHome && turnValue == 6) {
         placeOnBoard(currentTeam, playerInHome.id);
+    } else if (onBoard) {
+        console.log(onBoard);
     } else {
         if (gameState.currentTeam == gameState.teams.length - 1) {
             gameState.currentTeam = 0;
