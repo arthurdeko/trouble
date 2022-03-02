@@ -47,19 +47,38 @@ function playersOnBoard(teamNumber) {
     });
 }
 
+function makeMarkers(players) {
+    var markerLocations = players.forEach(function (player) {
+        var markerSpace = spaces[player.location + gameState.dieResult];
+        var marker = basicSpace(markerSpace.x, markerSpace.y, 20, 'orange');
+        marker.opacity(0.7);
+        marker.on('mouseup', function () {
+            markerLayer.clear();
+        });
+        markerLayer.add(marker);
+    });
+    
+}
+
 function takeTurn() {
     gameState.dieResult = rollDie(6);
     var turnValue = gameState.dieResult;
-    console.log(turnValue);
     var currentTeam = gameState.currentTeam;
     
     var playerInHome = playersInHome(currentTeam);
     var onBoard = playersOnBoard(currentTeam);
 
-    if ( playerInHome && turnValue == 6) {
+    if (playerInHome && onBoard.length == 0 && turnValue == 6) {
         placeOnBoard(currentTeam, playerInHome.id);
-    } else if (onBoard) {
-        console.log(onBoard);
+    } else if (onBoard.length > 0 && turnValue == 6) {
+        console.log(makeMarkers(onBoard));
+    } else if (onBoard.length > 0) {
+        console.log(makeMarkers(onBoard));
+        if (gameState.currentTeam == gameState.teams.length - 1) {
+            gameState.currentTeam = 0;
+        } else {
+            gameState.currentTeam++;
+        }
     } else {
         if (gameState.currentTeam == gameState.teams.length - 1) {
             gameState.currentTeam = 0;
@@ -68,10 +87,7 @@ function takeTurn() {
         }
     }
                      
-
-    console.log('Drawing die');
     dieLayer.draw();
-
     turnIndicator.fill(theme.teamColors[currentTeam]);
     layer.draw();
 }

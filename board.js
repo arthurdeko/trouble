@@ -20,6 +20,7 @@ var theme = {
 // then create layer
 var layer = new Konva.Layer();
 var playerLayer = new Konva.Layer();
+var markerLayer = new Konva.Layer();
 
 var wedgeStroke = 0;
 
@@ -177,6 +178,7 @@ dieLayer.add(dieCircle);
 dieLayer.add(dieValue);
 stage.add(dieLayer);
 stage.add(playerLayer);
+stage.add(markerLayer);
 
 // Turn indicator
 var turnIndicator = new Konva.Circle({
